@@ -7,6 +7,7 @@
   <meta name="description" content="ALE Engine Community page."/>
   <link href="../assets/icons/favicon-32.png?v=1" rel="icon" sizes="32x32" type="image/png"/>
   <link rel="stylesheet" href="../css/site.css"/>
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <header class="site-header" id="mainHeader">
@@ -47,7 +48,7 @@
           <a class="community-v2-discord" href="https://discord.gg/NP4U9CUrsH" target="_blank" rel="noopener noreferrer">
             <img src="../assets/images/community/discord-chat.png" alt="ALE Psych Discord preview"/>
             <div class="community-v2-discord-body">
-              <h2 class="ico-discord">Discord</h2>
+              <h2><i class="inline-icon" data-lucide="messages-square"></i>Discord</h2>
               <p>Main community hub for support, announcements, and discussion.</p>
               <span>Join Server</span>
             </div>
@@ -57,22 +58,19 @@
             <a class="community-v2-side-card" href="https://x.com/ale_engine" target="_blank" rel="noopener noreferrer">
               <img src="../assets/images/community/twitter-profile.png" alt="Twitter profile preview"/>
               <div class="community-v2-side-copy">
-                <h3 class="ico-twitter">Twitter/X</h3>
-                <p>Follow announcements, updates, and quick status posts.</p>
+                <h3><i class="inline-icon" data-lucide="at-sign"></i>Twitter/X</h3>
               </div>
             </a>
-            <a class="community-v2-side-card" href="https://www.youtube.com/@ALEEngine" target="_blank" rel="noopener noreferrer">
+            <a class="community-v2-side-card" href="https://www.youtube.com/@ale_psych" target="_blank" rel="noopener noreferrer">
               <img src="../assets/images/community/youtube-channel.png" alt="YouTube channel preview"/>
               <div class="community-v2-side-copy">
-                <h3 class="ico-youtube">YouTube</h3>
-                <p>Watch dev previews, gameplay clips, and channel updates.</p>
+                <h3><i class="inline-icon" data-lucide="play"></i>YouTube</h3>
               </div>
             </a>
             <a class="community-v2-side-card" href="../blogs/">
               <img src="../assets/images/community/blogs-page.png" alt="Blogs page preview"/>
               <div class="community-v2-side-copy">
-                <h3 class="ico-blog">Blog</h3>
-                <p>Read news posts, articles, and project updates.</p>
+                <h3><i class="inline-icon" data-lucide="newspaper"></i>Blog</h3>
               </div>
             </a>
           </div>
@@ -84,14 +82,14 @@
             <a class="community-v2-tool-card" href="https://github.com/topics/ale-psych" target="_blank" rel="noopener noreferrer">
               <img src="../assets/images/community/github-topic.png" alt="GitHub topic preview"/>
               <div>
-                <h3 class="ico-github">GitHub Topic</h3>
+                <h3><i class="inline-icon" data-lucide="hash"></i>GitHub Topic</h3>
                 <p>Repositories, tools, and ALE Psych ecosystem projects.</p>
               </div>
             </a>
             <a class="community-v2-tool-card" href="../wiki/">
               <img src="../assets/images/community/blogs-page.png" alt="Docs preview"/>
               <div>
-                <h3 class="ico-docs">Docs</h3>
+                <h3><i class="inline-icon" data-lucide="book-open-text"></i>Docs</h3>
                 <p>Reference guides and technical documentation.</p>
               </div>
             </a>
@@ -134,6 +132,11 @@
       </div>
     </div>
   </footer>
+  <script>
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
 </body>
 </html>
 

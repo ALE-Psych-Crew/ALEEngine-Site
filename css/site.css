@@ -232,7 +232,8 @@ a:hover { color: #eed6ff; }
 .dl-icon {
     width: 24px;
     height: 24px;
-    filter: brightness(0) invert(1);
+    stroke-width: 2.2;
+    color: #fff;
 }
 
 .dl-body {
@@ -643,27 +644,13 @@ a:hover { color: #eed6ff; }
     white-space: nowrap;
 }
 
-.community-v2-discord-body h2::before,
-.community-v2-side-card h3::before,
-.community-v2-tool-card h3::before {
-    content: "";
+.inline-icon {
     width: 0.95em;
     height: 0.95em;
-    display: inline-block;
     margin-right: 0.38em;
-    background: currentColor;
-    -webkit-mask: var(--icon) center / contain no-repeat;
-    mask: var(--icon) center / contain no-repeat;
-    opacity: 0.9;
-    transform: translateY(0.02em);
+    vertical-align: -0.08em;
+    stroke-width: 2.2;
 }
-
-.ico-discord { --icon: url('../assets/svg/index/discord.svg'); }
-.ico-twitter { --icon: url('../assets/svg/index/twitter.svg'); }
-.ico-youtube { --icon: url('../assets/svg/index/otherdevice.svg'); }
-.ico-blog { --icon: url('../assets/svg/index/gamebanana.svg'); }
-.ico-github { --icon: url('../assets/svg/index/github.svg'); }
-.ico-docs { --icon: url('../assets/svg/index/otherdevice.svg'); }
 
 .community-v2-tool-card p {
     margin: 0;

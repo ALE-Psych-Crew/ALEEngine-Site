@@ -7,6 +7,7 @@
     <meta content="ALE Engine homepage." name="description"/>
     <link href="assets/icons/favicon-32.png?v=1" rel="icon" sizes="32x32" type="image/png"/>
     <link href="css/site.css" rel="stylesheet"/>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <header class="site-header" id="mainHeader">
@@ -45,7 +46,7 @@
                     <p class="lead">ALE Engine is a Friday Night Funkin' engine focused on softcoding, customization, and modding through scripts and JSON, built from scratch with HaxeFlixel.</p>
                     <div class="hero-download-grid" id="heroDownloadGrid">
                         <a class="downloadCard" data-os="windows" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/Windows%20Build.zip" target="_blank" rel="noopener noreferrer" aria-label="Download Windows 64-bit build">
-                            <img class="dl-icon" src="assets/svg/index/win64.svg" alt="" width="24" height="24"/>
+                            <i class="dl-icon" data-lucide="monitor"></i>
                             <div class="dl-body">
                                 <span class="dl-title">Windows</span>
                                 <span class="dl-sub">ZIP · Win x64</span>
@@ -53,7 +54,7 @@
                             <span class="dl-cta">Download</span>
                         </a>
                         <a class="downloadCard" data-os="macos" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/MacOS%20Build.zip" target="_blank" rel="noopener noreferrer" aria-label="Download MacOS build">
-                            <img class="dl-icon" src="assets/svg/index/macos.svg" alt="" width="24" height="24"/>
+                            <i class="dl-icon" data-lucide="laptop"></i>
                             <div class="dl-body">
                                 <span class="dl-title">MacOS</span>
                                 <span class="dl-sub">ZIP · Universal/ARM</span>
@@ -61,7 +62,7 @@
                             <span class="dl-cta">Download</span>
                         </a>
                         <a class="downloadCard" data-os="android" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/Android%20Build.zip" target="_blank" rel="noopener noreferrer" aria-label="Download Android build">
-                            <img class="dl-icon" src="assets/svg/index/android.svg" alt="" width="24" height="24"/>
+                            <i class="dl-icon" data-lucide="smartphone"></i>
                             <div class="dl-body">
                                 <span class="dl-title">Android</span>
                                 <span class="dl-sub">APK (in ZIP)</span>
@@ -69,7 +70,7 @@
                             <span class="dl-cta">Download</span>
                         </a>
                         <a class="downloadCard" data-os="other" href="downloads/" aria-label="View other downloads">
-                            <img class="dl-icon" src="assets/svg/index/otherdevice.svg" alt="" width="24" height="24"/>
+                            <i class="dl-icon" data-lucide="ellipsis"></i>
                             <div class="dl-body">
                                 <span class="dl-title">Others</span>
                                 <span class="dl-sub">Windows x32, Linux, MacOS x64...</span>
@@ -152,6 +153,10 @@
     </footer>
     <script>
     (function () {
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+
         const grid = document.getElementById('heroDownloadGrid');
         if (grid) {
             const cards = Array.from(grid.querySelectorAll('.downloadCard'));
