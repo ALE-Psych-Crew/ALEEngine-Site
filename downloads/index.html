@@ -15,10 +15,16 @@
         <img alt="ALE Engine Logo" src="../assets/images/engine-branding/icon.png"/>
         <span>ALE Engine</span>
       </a>
+      <input aria-hidden="true" class="nav-toggle" id="navToggle" type="checkbox"/>
+      <label aria-label="Toggle navigation" class="nav-burger" for="navToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
       <nav class="main-nav" id="mainNav">
         <ul class="nav-left">
           <li><a href="../">Home</a></li>
-          <li><a href="../downloads/">Downloads</a></li>
+          <li><a aria-current="page" href="../downloads/">Downloads</a></li>
           <li><a href="../mods/">Mods</a></li>
           <li><a href="../community/">Community</a></li>
           <li><a href="../wiki/">Docs</a></li>
@@ -29,14 +35,94 @@
   </header>
 
   <main>
-    <section class="hero" style="padding:5rem 0 4rem; min-height: calc(100vh - 220px);">
+    <section class="hero download-hero">
       <div class="hero-backdrop"></div>
-      <div class="shell" style="position:relative; display:flex; align-items:center; justify-content:center;">
-        <article class="engine-notice" style="max-width:760px; width:100%;">
-          <div class="notice-body">
-            <p style="font-size:1.15rem; text-align:center;">Work in progress.</p>
+      <div class="shell download-shell">
+        <h1 class="downloads-page-title">ALE Psych Downloads</h1>
+        <section class="download-block">
+          <div class="download-intro">
+            <h1>Main Download</h1>
           </div>
-        </article>
+          <h2>Nightly Builds</h2>
+          <div class="hero-download-grid download-grid-page">
+            <a class="downloadCard" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/Windows%20Build.zip" target="_blank" rel="noopener noreferrer">
+              <img class="dl-icon" src="../assets/svg/index/win64.svg" alt="" width="24" height="24"/>
+              <div class="dl-body"><span class="dl-title">Windows</span><span class="dl-sub">Nightly</span></div>
+              <span class="dl-cta">Download</span>
+            </a>
+            <a class="downloadCard" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/Windows%20x32%20Build.zip" target="_blank" rel="noopener noreferrer">
+              <img class="dl-icon" src="../assets/svg/index/win32.svg" alt="" width="24" height="24"/>
+              <div class="dl-body"><span class="dl-title">Windows x32</span><span class="dl-sub">Nightly</span></div>
+              <span class="dl-cta">Download</span>
+            </a>
+            <a class="downloadCard" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/Linux%20Build.zip" target="_blank" rel="noopener noreferrer">
+              <img class="dl-icon" src="../assets/svg/index/linux.svg" alt="" width="24" height="24"/>
+              <div class="dl-body"><span class="dl-title">Linux</span><span class="dl-sub">Nightly</span></div>
+              <span class="dl-cta">Download</span>
+            </a>
+            <a class="downloadCard" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/Android%20Build.zip" target="_blank" rel="noopener noreferrer">
+              <img class="dl-icon" src="../assets/svg/index/android.svg" alt="" width="24" height="24"/>
+              <div class="dl-body"><span class="dl-title">Android</span><span class="dl-sub">Nightly</span></div>
+              <span class="dl-cta">Download</span>
+            </a>
+            <a class="downloadCard" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/MacOS%20Build.zip" target="_blank" rel="noopener noreferrer">
+              <img class="dl-icon" src="../assets/svg/index/macos.svg" alt="" width="24" height="24"/>
+              <div class="dl-body"><span class="dl-title">MacOS</span><span class="dl-sub">Nightly</span></div>
+              <span class="dl-cta">Download</span>
+            </a>
+            <a class="downloadCard" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/MacOS%20x64%20Build.zip" target="_blank" rel="noopener noreferrer">
+              <img class="dl-icon" src="../assets/svg/index/macosx64.svg" alt="" width="24" height="24"/>
+              <div class="dl-body"><span class="dl-title">MacOS x64</span><span class="dl-sub">Nightly</span></div>
+              <span class="dl-cta">Download</span>
+            </a>
+          </div>
+
+          <hr class="download-divider"/>
+
+          <details class="release-tabs">
+            <summary>Old Release - 0.1 Beta (Pre-Rewrite)</summary>
+            <div class="release-tab-body">
+              <h2>Pre-Rewrite Builds</h2>
+              <div class="hero-download-grid download-grid-page">
+                <a class="downloadCard altCard" href="https://github.com/ALE-Psych-Crew/ALE-Psych/releases/download/0.1-beta-pre-rewrite/Windows.Build.zip" target="_blank" rel="noopener noreferrer">
+                  <img class="dl-icon" src="../assets/svg/index/win64.svg" alt="" width="24" height="24"/>
+                  <div class="dl-body"><span class="dl-title">Windows</span><span class="dl-sub">Archive</span></div>
+                  <span class="dl-cta">Download</span>
+                </a>
+                <a class="downloadCard altCard" href="https://github.com/ALE-Psych-Crew/ALE-Psych/releases/download/0.1-beta-pre-rewrite/Windows.x32.Build.zip" target="_blank" rel="noopener noreferrer">
+                  <img class="dl-icon" src="../assets/svg/index/win32.svg" alt="" width="24" height="24"/>
+                  <div class="dl-body"><span class="dl-title">Windows x32</span><span class="dl-sub">Archive</span></div>
+                  <span class="dl-cta">Download</span>
+                </a>
+                <a class="downloadCard altCard" href="https://github.com/ALE-Psych-Crew/ALE-Psych/releases/download/0.1-beta-pre-rewrite/Linux.Build.zip" target="_blank" rel="noopener noreferrer">
+                  <img class="dl-icon" src="../assets/svg/index/linux.svg" alt="" width="24" height="24"/>
+                  <div class="dl-body"><span class="dl-title">Linux</span><span class="dl-sub">Archive</span></div>
+                  <span class="dl-cta">Download</span>
+                </a>
+                <a class="downloadCard altCard" href="https://github.com/ALE-Psych-Crew/ALE-Psych/releases/download/0.1-beta-pre-rewrite/Android.Build.zip" target="_blank" rel="noopener noreferrer">
+                  <img class="dl-icon" src="../assets/svg/index/android.svg" alt="" width="24" height="24"/>
+                  <div class="dl-body"><span class="dl-title">Android</span><span class="dl-sub">Archive</span></div>
+                  <span class="dl-cta">Download</span>
+                </a>
+                <a class="downloadCard altCard" href="https://github.com/ALE-Psych-Crew/ALE-Psych/releases/download/0.1-beta-pre-rewrite/iOS.Build.zip" target="_blank" rel="noopener noreferrer">
+                  <img class="dl-icon" src="../assets/svg/index/ios.svg" alt="" width="24" height="24"/>
+                  <div class="dl-body"><span class="dl-title">iOS</span><span class="dl-sub">Archive</span></div>
+                  <span class="dl-cta">Download</span>
+                </a>
+                <a class="downloadCard altCard" href="https://github.com/ALE-Psych-Crew/ALE-Psych/releases/download/0.1-beta-pre-rewrite/MacOS.Build.zip" target="_blank" rel="noopener noreferrer">
+                  <img class="dl-icon" src="../assets/svg/index/macos.svg" alt="" width="24" height="24"/>
+                  <div class="dl-body"><span class="dl-title">MacOS</span><span class="dl-sub">Archive</span></div>
+                  <span class="dl-cta">Download</span>
+                </a>
+                <a class="downloadCard altCard" href="https://github.com/ALE-Psych-Crew/ALE-Psych/releases/download/0.1-beta-pre-rewrite/MacOS.x64.Build.zip" target="_blank" rel="noopener noreferrer">
+                  <img class="dl-icon" src="../assets/svg/index/macosx64.svg" alt="" width="24" height="24"/>
+                  <div class="dl-body"><span class="dl-title">MacOS x64</span><span class="dl-sub">Archive</span></div>
+                  <span class="dl-cta">Download</span>
+                </a>
+              </div>
+            </div>
+          </details>
+        </section>
       </div>
     </section>
   </main>

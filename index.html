@@ -52,27 +52,27 @@
                             </div>
                             <span class="dl-cta">Download</span>
                         </a>
-                        <a class="downloadCard" data-os="macos" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/MacOS%20Build.zip" target="_blank" rel="noopener noreferrer" aria-label="Download macOS build">
+                        <a class="downloadCard" data-os="macos" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/MacOS%20Build.zip" target="_blank" rel="noopener noreferrer" aria-label="Download MacOS build">
                             <img class="dl-icon" src="assets/svg/index/macos.svg" alt="" width="24" height="24"/>
                             <div class="dl-body">
-                                <span class="dl-title">macOS</span>
+                                <span class="dl-title">MacOS</span>
                                 <span class="dl-sub">ZIP · Universal/ARM</span>
                             </div>
                             <span class="dl-cta">Download</span>
                         </a>
-                        <a class="downloadCard" data-os="linux" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/Linux%20Build.zip" target="_blank" rel="noopener noreferrer" aria-label="Download Linux build">
-                            <img class="dl-icon" src="assets/svg/index/linux.svg" alt="" width="24" height="24"/>
+                        <a class="downloadCard" data-os="android" href="https://nightly.link/ALE-Psych-Crew/ALE-Psych/workflows/builds.yaml/main/Android%20Build.zip" target="_blank" rel="noopener noreferrer" aria-label="Download Android build">
+                            <img class="dl-icon" src="assets/svg/index/android.svg" alt="" width="24" height="24"/>
                             <div class="dl-body">
-                                <span class="dl-title">Linux</span>
-                                <span class="dl-sub">ZIP</span>
+                                <span class="dl-title">Android</span>
+                                <span class="dl-sub">APK (in ZIP)</span>
                             </div>
                             <span class="dl-cta">Download</span>
                         </a>
                         <a class="downloadCard" data-os="other" href="downloads/" aria-label="View other downloads">
                             <img class="dl-icon" src="assets/svg/index/otherdevice.svg" alt="" width="24" height="24"/>
                             <div class="dl-body">
-                                <span class="dl-title">Other downloads</span>
-                                <span class="dl-sub">Android, iOS, Win 32-bit...</span>
+                                <span class="dl-title">Others</span>
+                                <span class="dl-sub">Windows x32, Linux, MacOS x64...</span>
                             </div>
                             <span class="dl-cta">Open</span>
                         </a>
@@ -158,9 +158,9 @@
             const platform = (navigator.platform || '').toLowerCase();
             const ua = (navigator.userAgent || '').toLowerCase();
             let preferred = 'windows';
-            if (platform.includes('mac')) preferred = 'macos';
-            else if (ua.includes('linux')) preferred = 'linux';
-            const rank = { windows: 1, macos: 2, linux: 3, other: 4 };
+            if (ua.includes('android')) preferred = 'android';
+            else if (platform.includes('mac')) preferred = 'macos';
+            const rank = { windows: 1, macos: 2, android: 3, other: 4 };
             if (rank[preferred]) rank[preferred] = 0;
             cards
                 .sort((a, b) => (rank[a.dataset.os] ?? 9) - (rank[b.dataset.os] ?? 9))
