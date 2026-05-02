@@ -44,30 +44,37 @@
             <button id="detailsBackdrop" type="button" class="mod-details-backdrop" aria-label="Close mod details"></button>
             <div class="mod-details-panel" role="document" tabindex="-1">
               <div class="mod-details-head">
-                <div>
+                <div class="mod-details-head-main">
                   <h2 id="detailsTitle">Select a mod</h2>
                   <p id="detailsMeta" class="mod-details-meta"></p>
                 </div>
-                <button id="detailsCloseButton" type="button" class="mod-details-close" aria-label="Close mod details modal">×</button>
-              </div>
-              <div class="mod-details-actions">
-                <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
+                <div class="mod-details-head-actions">
+                  <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
+                  <div class="mod-details-head-submitter" aria-label="Submitter">
+                    <span class="mod-details-head-submitter-label">Submitter</span>
+                    <div class="mod-details-submitter">
+                      <img id="detailsSubmitterAvatar" src="../assets/images/engine-branding/icon.png" alt="Submitter profile picture" loading="lazy"/>
+                      <a id="detailsSubmitterName" href="#" target="_blank" rel="noopener noreferrer">Unknown Creator</a>
+                    </div>
+                  </div>
+                  <button id="detailsCloseButton" type="button" class="mod-details-close" aria-label="Close mod details modal">×</button>
+                </div>
               </div>
               <div class="mod-details-layout">
                 <div class="mod-details-main">
-                  <p id="detailsDescription" class="mod-details-description"></p>
                   <section class="mod-details-section" aria-label="Mod stats and metadata">
                     <div id="detailsStats" class="mod-details-stats"></div>
                     <div id="detailsInfoGrid" class="mod-details-info-grid"></div>
                     <div id="detailsTags" class="mod-details-tags" hidden></div>
                   </section>
-                  <section id="detailsRequirementsSection" class="mod-details-section" aria-label="Requirements" hidden>
-                    <h3>Requirements</h3>
-                    <ul id="detailsRequirements" class="mod-details-list"></ul>
-                  </section>
                   <section class="mod-details-section" aria-label="Media previews">
                     <h3>Media</h3>
                     <div id="detailsMedia" class="mod-details-media"></div>
+                  </section>
+                  <p id="detailsDescription" class="mod-details-description"></p>
+                  <section id="detailsRequirementsSection" class="mod-details-section" aria-label="Requirements" hidden>
+                    <h3>Requirements</h3>
+                    <ul id="detailsRequirements" class="mod-details-list"></ul>
                   </section>
                 </div>
                 <aside class="mod-details-side" aria-label="Additional mod info">
@@ -137,6 +144,8 @@
       const detailsRequirementsSection = document.getElementById('detailsRequirementsSection');
       const detailsRequirements = document.getElementById('detailsRequirements');
       const detailsOpenLink = document.getElementById('detailsOpenLink');
+      const detailsSubmitterAvatar = document.getElementById('detailsSubmitterAvatar');
+      const detailsSubmitterName = document.getElementById('detailsSubmitterName');
       const detailsCloseButton = document.getElementById('detailsCloseButton');
       const detailsBackdrop = document.getElementById('detailsBackdrop');
       const prevButton = document.getElementById('modsPrevButton');
@@ -208,6 +217,11 @@
         detailsRequirements.innerHTML = '';
         detailsRequirementsSection.hidden = true;
         detailsOpenLink.href = 'https://gamebanana.com/mods';
+        detailsSubmitterAvatar.src = '../assets/images/engine-branding/icon.png';
+        detailsSubmitterAvatar.alt = 'Submitter profile picture';
+        detailsSubmitterName.textContent = 'Unknown Creator';
+        detailsSubmitterName.href = '#';
+        detailsSubmitterName.removeAttribute('aria-disabled');
       }
 
       function scrollToGridArea() {
@@ -623,38 +637,11 @@
           key.textContent = item.label;
           const value = document.createElement('span');
           value.className = 'mod-details-v';
-          if (item.type === 'submitter') {
-            value.appendChild(createSubmitterCard(item));
-          } else {
-            value.textContent = normalizeUiLabel(item.value);
-          }
+          value.textContent = normalizeUiLabel(item.value);
           row.append(key, value);
           fragment.appendChild(row);
         });
         detailsInfoGrid.appendChild(fragment);
-      }
-
-      function createSubmitterCard(item) {
-        const wrapper = document.createElement('span');
-        wrapper.className = 'mod-details-submitter';
-        const img = document.createElement('img');
-        img.loading = 'lazy';
-        img.src = asText(item.avatar, '../assets/images/engine-branding/icon.png');
-        img.alt = `${normalizeUiLabel(asText(item.value, 'Submitter'))} profile picture`;
-        img.addEventListener('error', () => {
-          img.src = '../assets/images/engine-branding/icon.png';
-        }, { once: true });
-        wrapper.appendChild(img);
-
-        const nameNode = item.url && isAbsoluteUrl(item.url) ? document.createElement('a') : document.createElement('span');
-        if (nameNode.tagName.toLowerCase() === 'a') {
-          nameNode.href = item.url;
-          nameNode.target = '_blank';
-          nameNode.rel = 'noopener noreferrer';
-        }
-        nameNode.textContent = normalizeUiLabel(asText(item.value, 'Unknown Creator'));
-        wrapper.appendChild(nameNode);
-        return wrapper;
       }
 
       function renderStatsChips(stats) {
@@ -804,8 +791,21 @@
         const studios = collectStudios(detail);
 
         detailsTitle.textContent = normalizeUiLabel(modName);
-        detailsMeta.textContent = submitterRole ? `by ${normalizeUiLabel(creatorName)} · ${normalizeUiLabel(submitterRole)}` : `by ${normalizeUiLabel(creatorName)}`;
+        detailsMeta.textContent = submitterRole ? normalizeUiLabel(submitterRole) : '';
         detailsOpenLink.href = asText(detail?._sProfileUrl, fallbackProfileUrl || 'https://gamebanana.com/mods');
+        detailsSubmitterAvatar.src = submitterAvatar;
+        detailsSubmitterAvatar.alt = `${normalizeUiLabel(creatorName)} profile picture`;
+        detailsSubmitterAvatar.addEventListener('error', () => {
+          detailsSubmitterAvatar.src = '../assets/images/engine-branding/icon.png';
+        }, { once: true });
+        detailsSubmitterName.textContent = normalizeUiLabel(creatorName);
+        if (submitterUrl && isAbsoluteUrl(submitterUrl)) {
+          detailsSubmitterName.href = submitterUrl;
+          detailsSubmitterName.removeAttribute('aria-disabled');
+        } else {
+          detailsSubmitterName.href = '#';
+          detailsSubmitterName.setAttribute('aria-disabled', 'true');
+        }
         detailsDescription.replaceChildren();
         const richDescription = parseRichTextToFragment(detail?._sDescription || detail?._sText);
         if (richDescription.childNodes.length) {
@@ -823,7 +823,6 @@
 
         renderKeyValueGrid([
           { label: 'Version', value: version },
-          { label: 'Submitter', value: creatorName, type: 'submitter', avatar: submitterAvatar, url: submitterUrl },
           { label: 'Submitted', value: submitDate },
           { label: 'Updated', value: updateDate }
         ]);
