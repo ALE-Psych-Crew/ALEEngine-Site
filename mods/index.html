@@ -53,28 +53,34 @@
               <div class="mod-details-actions">
                 <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
               </div>
-              <p id="detailsDescription" class="mod-details-description"></p>
-              <section class="mod-details-section" aria-label="Mod stats and metadata">
-                <div id="detailsStats" class="mod-details-stats"></div>
-                <div id="detailsInfoGrid" class="mod-details-info-grid"></div>
-                <div id="detailsTags" class="mod-details-tags" hidden></div>
-              </section>
-              <section id="detailsStudioSection" class="mod-details-section" aria-label="Studio" hidden>
-                <h3>Studio</h3>
-                <div id="detailsStudio" class="mod-details-studio"></div>
-              </section>
-              <section id="detailsCreditsSection" class="mod-details-section" aria-label="Credits" hidden>
-                <h3>Credits</h3>
-                <ul id="detailsCredits" class="mod-details-list"></ul>
-              </section>
-              <section id="detailsRequirementsSection" class="mod-details-section" aria-label="Requirements" hidden>
-                <h3>Requirements</h3>
-                <ul id="detailsRequirements" class="mod-details-list"></ul>
-              </section>
-              <section class="mod-details-section" aria-label="Media previews">
-                <h3>Media</h3>
-                <div id="detailsMedia" class="mod-details-media"></div>
-              </section>
+              <div class="mod-details-layout">
+                <div class="mod-details-main">
+                  <p id="detailsDescription" class="mod-details-description"></p>
+                  <section class="mod-details-section" aria-label="Mod stats and metadata">
+                    <div id="detailsStats" class="mod-details-stats"></div>
+                    <div id="detailsInfoGrid" class="mod-details-info-grid"></div>
+                    <div id="detailsTags" class="mod-details-tags" hidden></div>
+                  </section>
+                  <section id="detailsRequirementsSection" class="mod-details-section" aria-label="Requirements" hidden>
+                    <h3>Requirements</h3>
+                    <ul id="detailsRequirements" class="mod-details-list"></ul>
+                  </section>
+                  <section class="mod-details-section" aria-label="Media previews">
+                    <h3>Media</h3>
+                    <div id="detailsMedia" class="mod-details-media"></div>
+                  </section>
+                </div>
+                <aside class="mod-details-side" aria-label="Additional mod info">
+                  <section id="detailsStudioSection" class="mod-details-section" aria-label="Studio" hidden>
+                    <h3>Studio</h3>
+                    <div id="detailsStudio" class="mod-details-studio"></div>
+                  </section>
+                  <section id="detailsCreditsSection" class="mod-details-section" aria-label="Credits" hidden>
+                    <h3>Credits</h3>
+                    <ul id="detailsCredits" class="mod-details-list"></ul>
+                  </section>
+                </aside>
+              </div>
             </div>
           </section>
           <div id="modsGrid" class="mods-grid" aria-live="polite"></div>
@@ -608,6 +614,10 @@
           if (!item?.value) return;
           const row = document.createElement('div');
           row.className = 'mod-details-kv';
+          const labelSlug = asText(item.label).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          if (labelSlug) {
+            row.classList.add(`mod-details-kv-${labelSlug}`);
+          }
           const key = document.createElement('span');
           key.className = 'mod-details-k';
           key.textContent = item.label;
@@ -699,15 +709,18 @@
             card.appendChild(img);
           }
 
-          const nameEl = studio.url && isAbsoluteUrl(studio.url) ? document.createElement('a') : document.createElement('p');
-          nameEl.className = 'mod-details-studio-name';
-          if (nameEl.tagName.toLowerCase() === 'a') {
-            nameEl.href = studio.url;
-            nameEl.target = '_blank';
-            nameEl.rel = 'noopener noreferrer';
+          const hasRenderableImage = studio.image && isAbsoluteUrl(studio.image) && isLikelyImageUrl(studio.image);
+          if (!hasRenderableImage) {
+            const nameEl = studio.url && isAbsoluteUrl(studio.url) ? document.createElement('a') : document.createElement('p');
+            nameEl.className = 'mod-details-studio-name';
+            if (nameEl.tagName.toLowerCase() === 'a') {
+              nameEl.href = studio.url;
+              nameEl.target = '_blank';
+              nameEl.rel = 'noopener noreferrer';
+            }
+            nameEl.textContent = toNormalizedText(studio.name || 'Studio');
+            card.appendChild(nameEl);
           }
-          nameEl.textContent = toNormalizedText(studio.name || 'Studio');
-          card.appendChild(nameEl);
 
           if (studio.image && isAbsoluteUrl(studio.image) && !isLikelyImageUrl(studio.image)) {
             const imageLink = document.createElement('a');
