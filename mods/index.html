@@ -54,11 +54,8 @@
               <div class="mod-details-head-main">
                 <h2 id="detailsTitle">Select a mod</h2>
                 <p id="detailsMeta" class="mod-details-meta"></p>
-              </div>
-              <div class="mod-details-head-actions">
-                <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
-                <div class="mod-details-head-side">
-                  <button id="detailsCloseButton" type="button" class="mod-details-close" aria-label="Close mod details modal">×</button>
+                <div class="mod-details-head-support">
+                  <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
                   <div class="mod-details-head-submitter" aria-label="Submitter">
                     <span class="mod-details-head-submitter-label">Submitter</span>
                     <div class="mod-details-submitter">
@@ -68,6 +65,7 @@
                   </div>
                 </div>
               </div>
+              <button id="detailsCloseButton" type="button" class="mod-details-close" aria-label="Close mod details modal">×</button>
             </div>
             <div class="mod-details-layout">
               <div class="mod-details-main">
@@ -94,7 +92,6 @@
                 <section id="detailsCreditsSection" class="mod-details-section" aria-label="Credits" hidden>
                   <h3>Credits</h3>
                   <ul id="detailsCredits" class="mod-details-list"></ul>
-                  <p id="detailsVersion" class="mod-details-version" hidden></p>
                 </section>
               </aside>
             </div>
@@ -144,7 +141,6 @@
       const detailsStudio = document.getElementById('detailsStudio');
       const detailsCreditsSection = document.getElementById('detailsCreditsSection');
       const detailsCredits = document.getElementById('detailsCredits');
-      const detailsVersion = document.getElementById('detailsVersion');
       const detailsRequirementsSection = document.getElementById('detailsRequirementsSection');
       const detailsRequirements = document.getElementById('detailsRequirements');
       const detailsOpenLink = document.getElementById('detailsOpenLink');
@@ -218,8 +214,6 @@
         detailsStudioSection.hidden = true;
         detailsCredits.innerHTML = '';
         detailsCreditsSection.hidden = true;
-        detailsVersion.textContent = '';
-        detailsVersion.hidden = true;
         detailsRequirements.innerHTML = '';
         detailsRequirementsSection.hidden = true;
         detailsOpenLink.href = 'https://gamebanana.com/mods';
@@ -341,6 +335,135 @@
         }
 
         return '';
+      }
+
+      function parseYouTubeId(value) {
+        const raw = asText(value);
+        if (!raw) return '';
+
+        const idPattern = /^[a-zA-Z0-9_-]{11}$/;
+        if (idPattern.test(raw)) return raw;
+
+        try {
+          const parsed = new URL(raw.startsWith('//') ? `https:${raw}` : raw);
+          const host = parsed.hostname.replace(/^www\./i, '').toLowerCase();
+          if (host === 'youtu.be') {
+            const pathId = parsed.pathname.replace(/^\/+/, '').split('/')[0] || '';
+            return idPattern.test(pathId) ? pathId : '';
+          }
+          if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com') {
+            const watchId = parsed.searchParams.get('v') || '';
+            if (idPattern.test(watchId)) return watchId;
+            const pathId = parsed.pathname.split('/').filter(Boolean).pop() || '';
+            return idPattern.test(pathId) ? pathId : '';
+          }
+        } catch (_error) {
+          return '';
+        }
+
+        return '';
+      }
+
+      function buildYouTubeEmbedUrl(videoId) {
+        const id = parseYouTubeId(videoId);
+        return id ? `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1` : '';
+      }
+
+      function buildYouTubeThumbnailUrl(videoId) {
+        const id = parseYouTubeId(videoId);
+        return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : '';
+      }
+
+      function normalizePreviewMediaEntries(detailRecord) {
+        const previewMedia = detailRecord?._aPreviewMedia;
+        const entries = [];
+        const seenKeys = new Set();
+
+        function addImage(urlCandidate) {
+          const src = asText(urlCandidate);
+          if (!src) return;
+          const key = `image:${src}`;
+          if (seenKeys.has(key)) return;
+          seenKeys.add(key);
+          entries.push({ kind: 'image', src });
+        }
+
+        function addYouTube(source) {
+          const id = parseYouTubeId(source);
+          if (!id) return;
+          const key = `youtube:${id}`;
+          if (seenKeys.has(key)) return;
+          seenKeys.add(key);
+          entries.push({
+            kind: 'video',
+            provider: 'youtube',
+            youtubeId: id,
+            embedUrl: buildYouTubeEmbedUrl(id),
+            thumbSrc: buildYouTubeThumbnailUrl(id)
+          });
+        }
+
+        const images = previewMedia?._aImages;
+        if (Array.isArray(images)) {
+          images.forEach((image) => {
+            const source = resolveGameBananaMediaUrl(image, ['_sFile530', '_sFile220', '_sFile100', '_sFile']);
+            addImage(source);
+          });
+        }
+
+        const videoFieldCandidates = [
+          previewMedia?._aVideos,
+          previewMedia?._aVideo,
+          previewMedia?._aEmbeds,
+          previewMedia?._aYouTube,
+          detailRecord?._aVideos,
+          detailRecord?._aVideo
+        ];
+
+        function readVideoSourceFromObject(value) {
+          if (!value || typeof value !== 'object') return '';
+          return firstNonEmpty(
+            value._sYouTubeId,
+            value._sYoutubeId,
+            value._sVideoId,
+            value._sUrl,
+            value._sLink,
+            value._sEmbedUrl,
+            value._sEmbed,
+            value.url,
+            value.link,
+            value.embed,
+            value.id
+          );
+        }
+
+        function collectPossibleVideoSources(value, depth = 0) {
+          if (!value || depth > 4) return;
+
+          if (typeof value === 'string') {
+            addYouTube(value);
+            return;
+          }
+
+          if (Array.isArray(value)) {
+            value.forEach((item) => collectPossibleVideoSources(item, depth + 1));
+            return;
+          }
+
+          if (typeof value === 'object') {
+            const direct = readVideoSourceFromObject(value);
+            if (direct) addYouTube(direct);
+            Object.values(value).forEach((nested) => {
+              if (typeof nested === 'string' || Array.isArray(nested) || (nested && typeof nested === 'object')) {
+                collectPossibleVideoSources(nested, depth + 1);
+              }
+            });
+          }
+        }
+
+        videoFieldCandidates.forEach((candidate) => collectPossibleVideoSources(candidate));
+
+        return entries;
       }
 
       function imageFromRecord(record) {
@@ -731,29 +854,14 @@
         detailsStudioSection.hidden = false;
       }
 
-      function setCreditsSection(source, versionText) {
+      function setCreditsSection(source) {
         detailsCredits.innerHTML = '';
         detailsCredits.classList.remove('is-scrollable');
         const entries = collectCreditEntries(source);
-        const normalizedVersion = asText(versionText);
-
-        function renderVersion() {
-          if (!normalizedVersion) {
-            detailsVersion.textContent = '';
-            detailsVersion.hidden = true;
-            return;
-          }
-          detailsVersion.textContent = `Version ${normalizeUiLabel(normalizedVersion)}`;
-          detailsVersion.hidden = false;
-        }
 
         if (!entries.length) {
           const fallbackItems = collectListItems(source);
           setListSection(detailsCredits, detailsCreditsSection, fallbackItems.map((item) => normalizeUiLabel(item)));
-          renderVersion();
-          if (!detailsCreditsSection.hidden || normalizedVersion) {
-            detailsCreditsSection.hidden = false;
-          }
           return;
         }
 
@@ -840,23 +948,14 @@
         }
 
         detailsCredits.appendChild(fragment);
-        renderVersion();
         detailsCreditsSection.hidden = false;
       }
 
       function renderMedia(detailRecord) {
         detailsMedia.innerHTML = '';
-        const images = detailRecord?._aPreviewMedia?._aImages;
-        if (!Array.isArray(images) || images.length === 0) {
-          detailsMedia.innerHTML = '<p class="mods-status">No media preview available for this mod.</p>';
-          return;
-        }
+        const mediaEntries = normalizePreviewMediaEntries(detailRecord);
 
-        const mediaSources = images
-          .map((image) => resolveGameBananaMediaUrl(image, ['_sFile530', '_sFile220', '_sFile']))
-          .filter(Boolean);
-
-        if (!mediaSources.length) {
+        if (!mediaEntries.length) {
           detailsMedia.innerHTML = '<p class="mods-status">No media preview available for this mod.</p>';
           return;
         }
@@ -870,11 +969,6 @@
 
         const primaryWrap = document.createElement('div');
         primaryWrap.className = 'mod-details-gallery-primary';
-        const primaryImage = document.createElement('img');
-        primaryImage.className = 'mod-detail-image mod-detail-image-primary';
-        primaryImage.loading = 'lazy';
-        primaryImage.alt = `${asText(detailRecord?._sName, 'Mod')} media`;
-        primaryWrap.appendChild(primaryImage);
 
         const thumbsRow = document.createElement('div');
         thumbsRow.className = 'mod-details-gallery-thumbs';
@@ -891,28 +985,81 @@
         const thumbsStrip = document.createElement('div');
         thumbsStrip.className = 'mod-details-gallery-strip';
 
-        const thumbButtons = mediaSources.map((src, index) => {
-          const thumbButton = document.createElement('button');
-          thumbButton.type = 'button';
-          thumbButton.className = 'mod-details-gallery-thumb';
-          thumbButton.setAttribute('aria-label', `Show media image ${index + 1}`);
-          const thumbImage = document.createElement('img');
-          thumbImage.src = src;
-          thumbImage.loading = 'lazy';
-          thumbImage.alt = `${asText(detailRecord?._sName, 'Mod')} thumbnail ${index + 1}`;
-          thumbButton.appendChild(thumbImage);
-          thumbButton.addEventListener('click', () => {
-            activeIndex = index;
+        function createPrimaryMediaNode(entry) {
+          if (entry?.kind === 'video' && entry?.provider === 'youtube' && entry?.embedUrl) {
+            const frameWrap = document.createElement('div');
+            frameWrap.className = 'mod-details-gallery-primary-frame';
+            const iframe = document.createElement('iframe');
+            iframe.className = 'mod-details-gallery-embed';
+            iframe.src = entry.embedUrl;
+            iframe.title = `${asText(detailRecord?._sName, 'Mod')} video preview`;
+            iframe.loading = 'lazy';
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+            iframe.allowFullscreen = true;
+            frameWrap.appendChild(iframe);
+            return frameWrap;
+          }
+
+          const primaryImage = document.createElement('img');
+          primaryImage.className = 'mod-detail-image mod-detail-image-primary';
+          primaryImage.loading = 'lazy';
+          primaryImage.alt = `${asText(detailRecord?._sName, 'Mod')} media`;
+          primaryImage.src = entry?.src || '';
+          primaryImage.addEventListener('error', () => {
+            mediaEntries.splice(activeIndex, 1);
+            if (!mediaEntries.length) {
+              detailsMedia.innerHTML = '<p class="mods-status">No media preview available for this mod.</p>';
+              return;
+            }
+            activeIndex = Math.max(0, Math.min(activeIndex, mediaEntries.length - 1));
             syncGalleryState();
+          }, { once: true });
+          return primaryImage;
+        }
+
+        function buildThumbButtons() {
+          thumbsStrip.innerHTML = '';
+          mediaEntries.forEach((entry, index) => {
+            const isVideo = entry?.kind === 'video';
+            const thumbButton = document.createElement('button');
+            thumbButton.type = 'button';
+            thumbButton.className = `mod-details-gallery-thumb${isVideo ? ' is-video' : ''}`;
+            thumbButton.setAttribute('aria-label', isVideo ? `Play media video ${index + 1}` : `Show media image ${index + 1}`);
+
+            const mediaWrap = document.createElement('span');
+            mediaWrap.className = 'mod-details-gallery-thumb-media';
+
+            const thumbImage = document.createElement('img');
+            thumbImage.src = isVideo ? (entry.thumbSrc || '') : (entry.src || '');
+            thumbImage.loading = 'lazy';
+            thumbImage.alt = `${asText(detailRecord?._sName, 'Mod')} thumbnail ${index + 1}`;
+            mediaWrap.appendChild(thumbImage);
+
+            if (isVideo) {
+              const playIcon = document.createElement('span');
+              playIcon.className = 'mod-details-gallery-thumb-play';
+              playIcon.textContent = '▶';
+              playIcon.setAttribute('aria-hidden', 'true');
+              mediaWrap.appendChild(playIcon);
+            }
+
+            thumbButton.appendChild(mediaWrap);
+            thumbButton.addEventListener('click', () => {
+              activeIndex = index;
+              syncGalleryState();
+            });
+            thumbsStrip.appendChild(thumbButton);
           });
-          return thumbButton;
-        });
+        }
 
         function syncGalleryState() {
-          if (!mediaSources.length) return;
-          thumbStart = Math.max(0, Math.min(thumbStart, Math.max(0, mediaSources.length - visibleThumbs)));
-          primaryImage.src = mediaSources[activeIndex];
+          if (!mediaEntries.length) return;
+          thumbStart = Math.max(0, Math.min(thumbStart, Math.max(0, mediaEntries.length - visibleThumbs)));
+          activeIndex = Math.max(0, Math.min(activeIndex, mediaEntries.length - 1));
+          primaryWrap.replaceChildren(createPrimaryMediaNode(mediaEntries[activeIndex]));
 
+          const thumbButtons = Array.from(thumbsStrip.children);
           thumbButtons.forEach((button, index) => {
             const isVisible = index >= thumbStart && index < thumbStart + visibleThumbs;
             button.hidden = !isVisible;
@@ -920,10 +1067,10 @@
             button.setAttribute('aria-current', index === activeIndex ? 'true' : 'false');
           });
 
-          prevThumbs.hidden = mediaSources.length <= visibleThumbs;
-          nextThumbs.hidden = mediaSources.length <= visibleThumbs;
+          prevThumbs.hidden = mediaEntries.length <= visibleThumbs;
+          nextThumbs.hidden = mediaEntries.length <= visibleThumbs;
           prevThumbs.disabled = thumbStart <= 0;
-          nextThumbs.disabled = thumbStart + visibleThumbs >= mediaSources.length;
+          nextThumbs.disabled = thumbStart + visibleThumbs >= mediaEntries.length;
         }
 
         prevThumbs.addEventListener('click', () => {
@@ -932,35 +1079,21 @@
         });
 
         nextThumbs.addEventListener('click', () => {
-          thumbStart = Math.min(Math.max(0, mediaSources.length - visibleThumbs), thumbStart + visibleThumbs);
+          thumbStart = Math.min(Math.max(0, mediaEntries.length - visibleThumbs), thumbStart + visibleThumbs);
           syncGalleryState();
         });
 
-        thumbButtons.forEach((button) => thumbsStrip.appendChild(button));
+        buildThumbButtons();
         thumbsRow.append(prevThumbs, thumbsStrip, nextThumbs);
         gallery.append(primaryWrap, thumbsRow);
         detailsMedia.appendChild(gallery);
         syncGalleryState();
-
-        primaryImage.addEventListener('error', () => {
-          mediaSources.splice(activeIndex, 1);
-          thumbButtons.splice(activeIndex, 1);
-          if (!mediaSources.length) {
-            detailsMedia.innerHTML = '<p class="mods-status">No media preview available for this mod.</p>';
-            return;
-          }
-          activeIndex = Math.max(0, Math.min(activeIndex, mediaSources.length - 1));
-          thumbsStrip.innerHTML = '';
-          thumbButtons.forEach((button) => thumbsStrip.appendChild(button));
-          syncGalleryState();
-        });
       }
 
       function renderDetails(detail, fallbackProfileUrl, fallbackCreatorName) {
         const creatorName = asText(detail?._aSubmitter?._sName, fallbackCreatorName || 'Unknown Creator');
         const modName = asText(detail?._sName, 'Unnamed Mod');
         const submitterRole = firstNonEmpty(detail?._aSubmitter?._sTitle, detail?._aSubmitter?._sRank, detail?._aSubmitter?._sRole);
-        const version = firstNonEmpty(detail?._sVersion, detail?._aVersion?._sVersion, detail?._aLatestVersion?._sVersion);
         const submitDate = formatDate(firstNonEmpty(detail?._tsDateAdded, detail?._sDateAdded, detail?._sSubmissionDate));
         const updateDate = formatDate(firstNonEmpty(detail?._tsDateModified, detail?._sDateModified, detail?._sLastUpdateDate));
         const likes = formatNumber(firstFinite(detail?._nLikeCount, detail?._nLikes, detail?._aStats?._nLikeCount));
@@ -1010,8 +1143,7 @@
 
         renderTags(detail);
         setStudioSection(studios);
-        const versionLabel = version ? (version.toLowerCase().startsWith('v') ? version : `v${version}`) : '';
-        setCreditsSection(detail?._aCredits || detail?._aCreditGroups || detail?._aProfileCredits, versionLabel);
+        setCreditsSection(detail?._aCredits || detail?._aCreditGroups || detail?._aProfileCredits);
         setListSection(
           detailsRequirements,
           detailsRequirementsSection,
@@ -1048,8 +1180,6 @@
         detailsStudioSection.hidden = true;
         detailsCredits.innerHTML = '';
         detailsCreditsSection.hidden = true;
-        detailsVersion.textContent = '';
-        detailsVersion.hidden = true;
         detailsRequirements.innerHTML = '';
         detailsRequirementsSection.hidden = true;
         detailsOpenLink.href = fallbackProfileUrl || 'https://gamebanana.com/mods';
@@ -1070,8 +1200,6 @@
           detailsTags.hidden = true;
           detailsCredits.innerHTML = '';
           detailsCreditsSection.hidden = true;
-          detailsVersion.textContent = '';
-          detailsVersion.hidden = true;
           detailsRequirements.innerHTML = '';
           detailsRequirementsSection.hidden = true;
         }
