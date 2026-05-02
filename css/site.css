@@ -854,7 +854,9 @@ a:hover { color: #eed6ff; }
     z-index: 120;
     display: grid;
     place-items: center;
-    padding: 1.1rem;
+    padding: clamp(0.75rem, 2.2vw, 1.25rem);
+    padding-top: clamp(1rem, 3.8vw, 1.5rem);
+    padding-bottom: clamp(1rem, 3.8vw, 1.5rem);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -876,7 +878,7 @@ a:hover { color: #eed6ff; }
 .mod-details-panel {
     position: relative;
     width: min(1120px, calc(100vw - 2.4rem));
-    max-height: min(92vh, 980px);
+    max-height: min(900px, calc(100dvh - 3rem));
     overflow: auto;
     border: 1px solid rgba(220, 189, 255, 0.42);
     border-radius: 18px;
@@ -926,15 +928,18 @@ a:hover { color: #eed6ff; }
 
 .mod-details-head-actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     justify-content: flex-end;
-    gap: 0.55rem;
+    gap: 0.6rem;
     margin-left: auto;
+    min-width: min(100%, 420px);
 }
 
 .mod-details-head-actions .btn {
     min-height: 48px;
     padding-inline: 1.15rem;
+    flex: 0 1 auto;
 }
 
 .mod-details-head-submitter {
@@ -944,7 +949,9 @@ a:hover { color: #eed6ff; }
     padding: 0.38rem 0.5rem;
     display: grid;
     gap: 0.16rem;
-    min-width: 180px;
+    min-width: 160px;
+    max-width: 100%;
+    flex: 1 1 220px;
 }
 
 .mod-details-head-submitter-label {
@@ -1096,13 +1103,14 @@ a:hover { color: #eed6ff; }
     align-items: center;
     gap: 0.48rem;
     width: 100%;
-    white-space: nowrap;
+    min-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .mod-details-submitter a,
 .mod-details-submitter span {
+    min-width: 0;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -1125,24 +1133,24 @@ a:hover { color: #eed6ff; }
 .mod-details-studio {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.5rem;
+    gap: 0.6rem;
 }
 
 .mod-details-studio-card {
     border: 1px solid rgba(222, 191, 255, 0.18);
     border-radius: 10px;
-    padding: 0.45rem;
+    padding: 0.5rem;
     background: rgba(255, 255, 255, 0.02);
     display: grid;
-    gap: 0.3rem;
-    width: fit-content;
+    gap: 0.4rem;
+    width: 100%;
     max-width: 100%;
 }
 
 .mod-details-studio-image {
-    width: auto;
-    max-width: min(240px, 100%);
-    max-height: 120px;
+    width: 100%;
+    max-width: min(280px, 100%);
+    max-height: 140px;
     border-radius: 6px;
     border: 0;
     object-fit: contain;
@@ -1295,7 +1303,7 @@ a:hover { color: #eed6ff; }
 
     .mod-details-panel {
         width: min(980px, calc(100vw - 1.2rem));
-        max-height: 92vh;
+        max-height: calc(100dvh - 2rem);
         padding: 1rem;
     }
 
@@ -1315,12 +1323,15 @@ a:hover { color: #eed6ff; }
 
 @media (max-width: 620px) {
     .mod-details {
-        padding: 0.45rem;
+        place-items: start center;
+        padding: 0.6rem;
+        padding-top: max(0.6rem, env(safe-area-inset-top));
+        padding-bottom: max(0.6rem, env(safe-area-inset-bottom));
     }
 
     .mod-details-panel {
         width: calc(100vw - 0.9rem);
-        max-height: 94vh;
+        max-height: calc(100dvh - 1.2rem);
         border-radius: 14px;
     }
 
@@ -1332,6 +1343,27 @@ a:hover { color: #eed6ff; }
         width: 100%;
         justify-content: flex-start;
         flex-wrap: wrap;
+        margin-left: 0;
+        min-width: 0;
+        gap: 0.55rem;
+    }
+
+    .mod-details-head-actions .btn {
+        width: 100%;
+    }
+
+    .mod-details-head-submitter {
+        width: 100%;
+        flex-basis: 100%;
+        min-width: 0;
+    }
+
+    .mod-details-close {
+        margin-left: auto;
+    }
+
+    .mod-details-studio-image {
+        max-width: min(240px, 100%);
     }
 }
 
