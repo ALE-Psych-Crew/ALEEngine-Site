@@ -40,56 +40,6 @@
 
         <p id="modsStatus" class="mods-status" role="status" aria-live="polite">Loading mods…</p>
         <div class="mods-grid-area" id="modsGridArea">
-          <section id="modDetails" class="mod-details" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="detailsTitle" aria-describedby="detailsDescription" aria-live="polite">
-            <button id="detailsBackdrop" type="button" class="mod-details-backdrop" aria-label="Close mod details"></button>
-            <div class="mod-details-panel" role="document" tabindex="-1">
-              <div class="mod-details-head">
-                <div class="mod-details-head-main">
-                  <h2 id="detailsTitle">Select a mod</h2>
-                  <p id="detailsMeta" class="mod-details-meta"></p>
-                </div>
-                <div class="mod-details-head-actions">
-                  <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
-                  <div class="mod-details-head-submitter" aria-label="Submitter">
-                    <span class="mod-details-head-submitter-label">Submitter</span>
-                    <div class="mod-details-submitter">
-                      <img id="detailsSubmitterAvatar" src="../assets/images/engine-branding/icon.png" alt="Submitter profile picture" loading="lazy"/>
-                      <a id="detailsSubmitterName" href="#" target="_blank" rel="noopener noreferrer">Unknown Creator</a>
-                    </div>
-                  </div>
-                  <button id="detailsCloseButton" type="button" class="mod-details-close" aria-label="Close mod details modal">×</button>
-                </div>
-              </div>
-              <div class="mod-details-layout">
-                <div class="mod-details-main">
-                  <section class="mod-details-section" aria-label="Mod stats and metadata">
-                    <div id="detailsStats" class="mod-details-stats"></div>
-                    <div id="detailsInfoGrid" class="mod-details-info-grid"></div>
-                    <div id="detailsTags" class="mod-details-tags" hidden></div>
-                  </section>
-                  <section class="mod-details-section" aria-label="Media previews">
-                    <h3>Media</h3>
-                    <div id="detailsMedia" class="mod-details-media"></div>
-                  </section>
-                  <p id="detailsDescription" class="mod-details-description"></p>
-                  <section id="detailsRequirementsSection" class="mod-details-section" aria-label="Requirements" hidden>
-                    <h3>Requirements</h3>
-                    <ul id="detailsRequirements" class="mod-details-list"></ul>
-                  </section>
-                </div>
-                <aside class="mod-details-side" aria-label="Additional mod info">
-                  <section id="detailsStudioSection" class="mod-details-section" aria-label="Studio" hidden>
-                    <h3>Studio</h3>
-                    <div id="detailsStudio" class="mod-details-studio"></div>
-                  </section>
-                  <section id="detailsCreditsSection" class="mod-details-section" aria-label="Credits" hidden>
-                    <h3>Credits</h3>
-                    <ul id="detailsCredits" class="mod-details-list"></ul>
-                  </section>
-                </aside>
-              </div>
-            </div>
-          </section>
           <div id="modsGrid" class="mods-grid" aria-live="polite"></div>
         </div>
         <nav class="mods-pagination" aria-label="Mods pages">
@@ -97,6 +47,56 @@
           <p id="modsPageIndicator" class="mods-page-indicator" aria-live="polite">Page 1</p>
           <button id="modsNextButton" type="button" class="btn btn-ghost">Next</button>
         </nav>
+        <section id="modDetails" class="mod-details" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="detailsTitle" aria-describedby="detailsDescription" aria-live="polite">
+          <button id="detailsBackdrop" type="button" class="mod-details-backdrop" aria-label="Close mod details"></button>
+          <div class="mod-details-panel" role="document" tabindex="-1">
+            <div class="mod-details-head">
+              <div class="mod-details-head-main">
+                <h2 id="detailsTitle">Select a mod</h2>
+                <p id="detailsMeta" class="mod-details-meta"></p>
+              </div>
+              <div class="mod-details-head-actions">
+                <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
+                <div class="mod-details-head-submitter" aria-label="Submitter">
+                  <span class="mod-details-head-submitter-label">Submitter</span>
+                  <div class="mod-details-submitter">
+                    <img id="detailsSubmitterAvatar" src="../assets/images/engine-branding/icon.png" alt="Submitter profile picture" loading="lazy"/>
+                    <a id="detailsSubmitterName" href="#" target="_blank" rel="noopener noreferrer">Unknown Creator</a>
+                  </div>
+                </div>
+                <button id="detailsCloseButton" type="button" class="mod-details-close" aria-label="Close mod details modal">×</button>
+              </div>
+            </div>
+            <div class="mod-details-layout">
+              <div class="mod-details-main">
+                <section class="mod-details-section" aria-label="Mod stats and metadata">
+                  <div id="detailsStats" class="mod-details-stats"></div>
+                  <div id="detailsInfoGrid" class="mod-details-info-grid"></div>
+                  <div id="detailsTags" class="mod-details-tags" hidden></div>
+                </section>
+                <section class="mod-details-section" aria-label="Media previews">
+                  <h3>Media</h3>
+                  <div id="detailsMedia" class="mod-details-media"></div>
+                </section>
+                <p id="detailsDescription" class="mod-details-description"></p>
+                <section id="detailsRequirementsSection" class="mod-details-section" aria-label="Requirements" hidden>
+                  <h3>Requirements</h3>
+                  <ul id="detailsRequirements" class="mod-details-list"></ul>
+                </section>
+              </div>
+              <aside class="mod-details-side" aria-label="Additional mod info">
+                <section id="detailsStudioSection" class="mod-details-section" aria-label="Studio" hidden>
+                  <h3>Studio</h3>
+                  <div id="detailsStudio" class="mod-details-studio"></div>
+                </section>
+                <section id="detailsCreditsSection" class="mod-details-section" aria-label="Credits" hidden>
+                  <h3>Credits</h3>
+                  <ul id="detailsCredits" class="mod-details-list"></ul>
+                </section>
+              </aside>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
   </main>
