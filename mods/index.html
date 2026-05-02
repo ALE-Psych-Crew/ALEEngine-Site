@@ -39,19 +39,23 @@
         </div>
 
         <p id="modsStatus" class="mods-status" role="status" aria-live="polite">Loading mods…</p>
-        <div id="modsGrid" class="mods-grid" aria-live="polite"></div>
-
-        <section id="modDetails" class="mod-details" hidden aria-live="polite">
-          <div class="mod-details-head">
-            <div>
-              <h2 id="detailsTitle">Select a mod</h2>
-              <p id="detailsMeta" class="mod-details-meta"></p>
+        <div class="mods-grid-area">
+          <section id="modDetails" class="mod-details" hidden aria-hidden="true" aria-live="polite" role="region" aria-labelledby="detailsTitle">
+            <div class="mod-details-head">
+              <div>
+                <h2 id="detailsTitle">Select a mod</h2>
+                <p id="detailsMeta" class="mod-details-meta"></p>
+              </div>
+              <button id="detailsCloseButton" type="button" class="mod-details-close" aria-label="Close mod details panel">×</button>
             </div>
-            <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
-          </div>
-          <p id="detailsDescription" class="mod-details-description"></p>
-          <div id="detailsMedia" class="mod-details-media"></div>
-        </section>
+            <div class="mod-details-actions">
+              <a id="detailsOpenLink" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Open In GameBanana</a>
+            </div>
+            <p id="detailsDescription" class="mod-details-description"></p>
+            <div id="detailsMedia" class="mod-details-media"></div>
+          </section>
+          <div id="modsGrid" class="mods-grid" aria-live="polite"></div>
+        </div>
       </div>
     </section>
   </main>
@@ -88,6 +92,42 @@
       const detailsDescription = document.getElementById('detailsDescription');
       const detailsMedia = document.getElementById('detailsMedia');
       const detailsOpenLink = document.getElementById('detailsOpenLink');
+      const detailsCloseButton = document.getElementById('detailsCloseButton');
+      let lastActiveCard = null;
+
+      function openDetailsPanel() {
+        if (!detailsEl.hidden && detailsEl.classList.contains('is-open')) return;
+        detailsEl.hidden = false;
+        detailsEl.setAttribute('aria-hidden', 'false');
+        detailsEl.classList.remove('is-closing');
+        requestAnimationFrame(() => detailsEl.classList.add('is-open'));
+      }
+
+      function closeDetailsPanel({ returnFocus = false } = {}) {
+        if (detailsEl.hidden || detailsEl.classList.contains('is-closing')) return;
+        detailsEl.classList.remove('is-open');
+        detailsEl.classList.add('is-closing');
+        detailsEl.setAttribute('aria-hidden', 'true');
+
+        let didClose = false;
+        let closeTimeoutId = null;
+
+        const onClose = () => {
+          if (didClose) return;
+          didClose = true;
+          if (closeTimeoutId) window.clearTimeout(closeTimeoutId);
+          detailsEl.hidden = true;
+          detailsEl.classList.remove('is-closing');
+          if (returnFocus) {
+            if (lastActiveCard && typeof lastActiveCard.focus === 'function') {
+              lastActiveCard.focus();
+            }
+          }
+        };
+
+        detailsEl.addEventListener('transitionend', onClose, { once: true });
+        closeTimeoutId = window.setTimeout(onClose, 340);
+      }
 
       function asText(value, fallback = '') {
         return typeof value === 'string' && value.trim() ? value.trim() : fallback;
@@ -152,7 +192,10 @@
             </div>
           </div>
         `;
-        button.addEventListener('click', () => loadDetails(record?._idRow, profileUrl, creatorName));
+        button.addEventListener('click', () => {
+          lastActiveCard = button;
+          loadDetails(record?._idRow, profileUrl, creatorName);
+        });
         return button;
       }
 
@@ -216,7 +259,7 @@
 
       async function loadDetails(modId, fallbackProfileUrl, fallbackCreatorName) {
         if (!modId) return;
-        detailsEl.hidden = false;
+        openDetailsPanel();
         detailsTitle.textContent = 'Loading details…';
         detailsMeta.textContent = '';
         detailsDescription.textContent = '';
@@ -236,7 +279,6 @@
           detailsDescription.textContent = parseRichTextToPlain(detail?._sDescription) || parseRichTextToPlain(detail?._sText) || 'No description provided.';
 
           renderMedia(detail);
-          detailsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } catch (error) {
           detailsTitle.textContent = 'Could not load mod details';
           detailsMeta.textContent = '';
@@ -244,6 +286,12 @@
           detailsMedia.innerHTML = '';
         }
       }
+
+      detailsCloseButton.addEventListener('click', () => closeDetailsPanel({ returnFocus: true }));
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        closeDetailsPanel({ returnFocus: true });
+      });
 
       async function loadMods() {
         statusEl.textContent = 'Loading mods…';

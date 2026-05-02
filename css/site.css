@@ -751,6 +751,12 @@ a:hover { color: #eed6ff; }
     gap: 0.8rem;
 }
 
+.mods-grid-area {
+    position: relative;
+    isolation: isolate;
+    padding-top: 0.35rem;
+}
+
 .mod-card {
     cursor: pointer;
     text-align: left;
@@ -815,23 +821,79 @@ a:hover { color: #eed6ff; }
 }
 
 .mod-details {
-    margin-top: 0.5rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9;
     border: 1px solid var(--line);
     border-radius: 16px;
     padding: 1rem;
     background: linear-gradient(180deg, rgba(43, 31, 90, 0.78), rgba(18, 13, 39, 0.95));
+    box-shadow: 0 22px 42px rgba(8, 4, 24, 0.55);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transform: translateY(-16px) scale(0.985);
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 260ms ease, transform 300ms cubic-bezier(0.22, 0.95, 0.25, 1), visibility 0s linear 300ms;
+}
+
+.mod-details.is-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 260ms ease, transform 300ms cubic-bezier(0.22, 0.95, 0.25, 1);
+}
+
+.mod-details.is-closing {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.99);
 }
 
 .mod-details-head {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.8rem;
-    align-items: center;
+    gap: 1rem;
+    align-items: flex-start;
     justify-content: space-between;
 }
 
 .mod-details-head h2 {
-    margin: 0;
+    margin: 0 0 0.25rem;
+}
+
+.mod-details-actions {
+    margin-top: 0.75rem;
+}
+
+.mod-details-close {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 1px solid rgba(233, 207, 255, 0.46);
+    background: rgba(255, 255, 255, 0.08);
+    color: #f9edff;
+    font-size: 1.25rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.mod-details-close:hover,
+.mod-details-close:focus-visible {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.7);
+    transform: translateY(-1px);
+}
+
+.mod-details-close:focus-visible {
+    outline: 2px solid rgba(231, 190, 255, 0.9);
+    outline-offset: 2px;
 }
 
 .mod-details-meta,
@@ -839,11 +901,16 @@ a:hover { color: #eed6ff; }
     color: var(--text-soft);
 }
 
+.mod-details-description {
+    margin: 0.95rem 0 0;
+    line-height: 1.6;
+}
+
 .mod-details-media {
-    margin-top: 0.85rem;
+    margin-top: 1rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 0.7rem;
+    gap: 0.8rem;
 }
 
 .mod-detail-image {
@@ -872,6 +939,11 @@ a:hover { color: #eed6ff; }
     .community-v2-discord img {
         height: 300px;
         min-height: 300px;
+    }
+
+    .mod-details {
+        position: relative;
+        margin-bottom: 0.75rem;
     }
 }
 
