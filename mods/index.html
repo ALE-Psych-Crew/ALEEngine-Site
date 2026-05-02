@@ -93,7 +93,7 @@
       const detailsMedia = document.getElementById('detailsMedia');
       const detailsOpenLink = document.getElementById('detailsOpenLink');
       const detailsCloseButton = document.getElementById('detailsCloseButton');
-      const MIN_VISIBLE_CARD_SLOTS = 8;
+      const TARGET_CARD_SLOTS = 30;
       let lastActiveCard = null;
 
       function openDetailsPanel() {
@@ -169,6 +169,35 @@
         return resolveGameBananaMediaUrl(first, ['_sFile220', '_sFile530', '_sFile100', '_sFile']);
       }
 
+      function createThumbnailFallback() {
+        const fallback = document.createElement('div');
+        fallback.className = 'mod-thumb mod-thumb-fallback';
+        fallback.textContent = 'No Preview';
+        return fallback;
+      }
+
+      function createCardThumbnail(previewUrl, altText) {
+        const thumbWrap = document.createElement('div');
+        thumbWrap.className = 'mod-thumb-wrap';
+
+        if (!previewUrl) {
+          thumbWrap.appendChild(createThumbnailFallback());
+          return thumbWrap;
+        }
+
+        const image = document.createElement('img');
+        image.className = 'mod-thumb';
+        image.src = previewUrl;
+        image.alt = altText;
+        image.loading = 'lazy';
+        image.addEventListener('error', () => {
+          thumbWrap.replaceChildren(createThumbnailFallback());
+        }, { once: true });
+
+        thumbWrap.appendChild(image);
+        return thumbWrap;
+      }
+
       function createCard(record) {
         const name = asText(record?._sName, 'Unnamed Mod');
         const profileUrl = asText(record?._sProfileUrl, 'https://gamebanana.com/mods');
@@ -176,23 +205,33 @@
         const creatorName = asText(creator._sName, 'Unknown Creator');
         const creatorAvatar = asText(creator._sAvatarUrl, '../assets/images/engine-branding/icon.png');
         const preview = imageFromRecord(record);
-        const cardFallbackMarkup = '<div class="mod-thumb mod-thumb-fallback">No Preview</div>';
-
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'mod-card';
-        button.innerHTML = `
-          <div class="mod-thumb-wrap">
-            ${preview ? `<img class="mod-thumb" src="${preview}" alt="${name} thumbnail" loading="lazy" onerror="this.onerror=null; this.closest('.mod-thumb-wrap').innerHTML='${cardFallbackMarkup}';"/>` : cardFallbackMarkup}
-          </div>
-          <div class="mod-card-body">
-            <h3>${name}</h3>
-            <div class="mod-creator">
-              <img src="${creatorAvatar}" alt="${creatorName} profile picture" loading="lazy"/>
-              <span>${creatorName}</span>
-            </div>
-          </div>
-        `;
+        button.appendChild(createCardThumbnail(preview, `${name} thumbnail`));
+
+        const cardBody = document.createElement('div');
+        cardBody.className = 'mod-card-body';
+
+        const title = document.createElement('h3');
+        title.textContent = name;
+        cardBody.appendChild(title);
+
+        const creatorWrap = document.createElement('div');
+        creatorWrap.className = 'mod-creator';
+
+        const creatorImage = document.createElement('img');
+        creatorImage.src = creatorAvatar;
+        creatorImage.alt = `${creatorName} profile picture`;
+        creatorImage.loading = 'lazy';
+        creatorWrap.appendChild(creatorImage);
+
+        const creatorText = document.createElement('span');
+        creatorText.textContent = creatorName;
+        creatorWrap.appendChild(creatorText);
+
+        cardBody.appendChild(creatorWrap);
+        button.appendChild(cardBody);
         button.addEventListener('click', () => {
           lastActiveCard = button;
           loadDetails(record?._idRow, profileUrl, creatorName);
@@ -321,7 +360,7 @@
       async function loadMods() {
         statusEl.textContent = 'Loading mods…';
         gridEl.innerHTML = '';
-        renderPlaceholders(MIN_VISIBLE_CARD_SLOTS);
+        renderPlaceholders(TARGET_CARD_SLOTS);
         try {
           const response = await fetch(LIST_ENDPOINT);
           const data = await response.json();
@@ -368,15 +407,15 @@
           gridEl.innerHTML = '';
           if (!records.length) {
             statusEl.textContent = 'No mods found right now.';
-            renderPlaceholders(MIN_VISIBLE_CARD_SLOTS);
+            renderPlaceholders(TARGET_CARD_SLOTS);
             return;
           }
 
           const fragment = document.createDocumentFragment();
           records.forEach((record) => fragment.appendChild(createCard(record)));
           gridEl.appendChild(fragment);
-          renderPlaceholders(Math.max(0, MIN_VISIBLE_CARD_SLOTS - records.length));
-          statusEl.textContent = `Loaded ${records.length} mod${records.length === 1 ? '' : 's'}.`;
+          renderPlaceholders(Math.max(0, TARGET_CARD_SLOTS - records.length));
+          statusEl.textContent = '';
         } catch (error) {
           console.error('Failed to load mods listing:', error);
           statusEl.textContent = 'Failed to load mods. Please try again later or open GameBanana directly.';

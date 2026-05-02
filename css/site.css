@@ -933,23 +933,12 @@ a:hover { color: #eed6ff; }
     border-style: dashed;
     border-color: rgba(206, 170, 255, 0.18);
     background: linear-gradient(180deg, rgba(35, 24, 74, 0.55), rgba(19, 13, 42, 0.75));
+    opacity: 0.9;
 }
 
 .mod-thumb-skeleton,
 .skeleton-line {
-    position: relative;
-    overflow: hidden;
     background: rgba(255, 255, 255, 0.08);
-}
-
-.mod-thumb-skeleton::after,
-.skeleton-line::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
-    animation: modsSkeletonShimmer 1.35s ease-in-out infinite;
 }
 
 .mod-card-body-skeleton {
@@ -969,10 +958,6 @@ a:hover { color: #eed6ff; }
 
 .skeleton-line-meta {
     width: 56%;
-}
-
-@keyframes modsSkeletonShimmer {
-    100% { transform: translateX(100%); }
 }
 
 .footer-bottom p {
